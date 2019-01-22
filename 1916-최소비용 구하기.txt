@@ -1,0 +1,64 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+using namespace std;
+
+vector<pair<int, int> >city[1010];
+int d[1010];
+int INF = 1000000000;
+
+// 다익스트라 알고리즘 선언
+void dijkstra(int start);
+
+int main() {
+	cin.tie(NULL);
+	ios::sync_with_stdio(false);
+
+	// 도시의 개수과 버스의 개수를 받고 배열 d를 초기화
+	int n, m;
+	cin >> n >> m;
+	for (int i = 1; i <= n; i++) {
+		d[i] = INF;
+	}
+
+	// 버스의 출발 도시의 번호와 도착 도시의 번호, 그리고 버스 비용을 받고 이를 city배열에 넣음
+	// pair의 first가 비용, second가 도착 도시의 번호이다.
+	int u, v, w;
+	for (int i = 1; i <= m; i++) {
+		cin >> u >> v >> w;
+		city[u].push_back(make_pair(w, v));
+	}
+
+	// 우리가 구하고자 하는 구간 출발점의 도시번호와 도착점의 도시번호를 받음
+	int start, end;
+	cin >> start >> end;
+
+	// 다익스트라 함수를 실행하고 최소 비용을 출력
+	dijkstra(start);
+	cout << d[end] << "\n";
+	return 0;
+}
+
+void dijkstra(int start) {
+	d[start] = 0;	// 자기 자신으로의 비용은 0
+	priority_queue<pair<int, int> >pq;
+	pq.push(make_pair(0, start));
+
+	// 큐가 빌때까지 반복
+	while (!pq.empty()) {
+		int current = pq.top().second;
+		int distance = -pq.top().first;
+		pq.pop();
+		if (d[current] < distance) {
+			continue;
+		}
+		for (int i = 0; i < city[current].size(); i++) {
+			int next = city[current][i].second;
+			int nextDistance = distance + city[current][i].first;
+			if (nextDistance < d[next]) {
+				d[next] = nextDistance;
+				pq.push(make_pair(-nextDistance, next));
+			}
+		}
+	}
+}
